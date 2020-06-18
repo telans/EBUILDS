@@ -16,11 +16,12 @@ NV_SETTINGS_PV="$(ver_cut '1').64"
 NV_VULKAN_BETA_PV="$(ver_rs 1- '')"
 
 SRC_URI="
-	amd64? ( "https://developer.nvidia.com/vulkan-beta-${NV_VULKAN_BETA_PV}-linux" -> ${AMD64_NV_PACKAGE}.run )
+	amd64? (
+		"https://developer.nvidia.com/vulkan-beta-${NV_VULKAN_BETA_PV}-linux" -> ${AMD64_NV_PACKAGE}.run
+	)
 	tools? (
 		https://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-${NV_SETTINGS_PV}.tar.bz2
-	)
-"
+	)"
 
 LICENSE="GPL-2 NVIDIA-r2"
 SLOT="0/${PV%.*}"
@@ -28,7 +29,7 @@ KEYWORDS="-* ~amd64"
 RESTRICT="bindist mirror"
 EMULTILIB_PKG="true"
 
-IUSE="acpi compat +driver gtk3 kernel_FreeBSD kernel_linux +kms libglvnd multilib static-libs systemd +tools uvm wayland +X"
+IUSE="acpi compat +driver gtk3 kernel_linux +kms libglvnd multilib static-libs systemd +tools uvm wayland +X"
 REQUIRED_USE="
 	tools? ( X )
 	static-libs? ( tools )
@@ -90,61 +91,8 @@ PATCHES=(
 	# https://gitlab.com/snippets/1945940
 	"${FILESDIR}"/vulkan-kernel-5.6.patch
 )
-nvidia_drivers_versions_check() {
-	CONFIG_CHECK=""
-
-	if use kernel_linux && kernel_is ge 5 6; then
-		ewarn "Gentoo supports kernels which are supported by NVIDIA"
-		ewarn "which are limited to the following kernels:"
-		ewarn "<sys-kernel/gentoo-sources-5.6"
-		ewarn "<sys-kernel/vanilla-sources-5.6"
-		ewarn ""
-		ewarn "You are free to utilize epatch_user to provide whatever"
-		ewarn "support you feel is appropriate, but will not receive"
-		ewarn "support as a result of those changes."
-		ewarn ""
-		ewarn "Do not file a bug report about this."
-		ewarn ""
-	fi
-
-	# Since Nvidia ships many different series of drivers, we need to give the user
-	# some kind of guidance as to what version they should install. This tries
-	# to point the user in the right direction but can't be perfect. check
-	# nvidia-driver.eclass
-	nvidia-driver_check
-
-	if use kms; then
-		if kernel_is lt 4 2; then
-			ewarn "NVIDIA does not support kernel moddsetting on"
-			ewarn "the fallowing kernel:"
-			ewarn "<sys-kernel/gentoo-sources-4.2"
-			ewarn "<sys-kernel/vanilla-sources-4.2"
-			ewarn
-		else
-			einfo "USE +kms: checking kernel for KMS CONFIG recommended by NVIDIA."
-			einfo
-			CONFIG_CHECK+=" ~DRM_KMS_HELPER ~DRM_KMS_FB_HELPER"
-		fi
-	fi
-
-	# Kernel features/options to check for
-	CONFIG_CHECK+=" !DEBUG_MUTEXES !I2C_NVIDIA_GPU ~!LOCKDEP ~MTRR ~SYSVIPC ~ZONE_DMA"
-
-	# Now do the above checks
-	use kernel_linux && check_extra_config
-}
-
-pkg_pretend() {
-	nvidia_drivers_versions_check
-}
 
 pkg_setup() {
-	nvidia_drivers_versions_check
-
-	# try to turn off distcc and ccache for people that have a problem with it
-	export DISTCC_DISABLE=1
-	export CCACHE_DISABLE=1
-
 	if use driver && use kernel_linux; then
 		MODULE_NAMES="nvidia(video:${S}/kernel)"
 		use uvm && MODULE_NAMES+=" nvidia-uvm(video:${S}/kernel)"
@@ -165,20 +113,8 @@ pkg_setup() {
 		BUILD_FIXES="ARCH=$(uname -m | sed -e 's/i.86/i386/')"
 	fi
 
-	if use kernel_linux && kernel_is lt 2 6 9; then
-		eerror "You must build this against 2.6.9 or higher kernels."
-	fi
-
 	# set variables to where files are in the package structure
-	if use kernel_FreeBSD; then
-		use amd64-fbsd && S="${WORKDIR}/${AMD64_FBSD_NV_PACKAGE}"
-		NV_DOC="${S}/doc"
-		NV_OBJ="${S}/obj"
-		NV_SRC="${S}/src"
-		NV_MAN="${S}/x11/man"
-		NV_X11="${S}/obj"
-		NV_SOVER=1
-	elif use kernel_linux; then
+	if use kernel_linux; then
 		NV_DOC="${S}"
 		NV_OBJ="${S}"
 		NV_SRC="${S}/kernel"
@@ -186,7 +122,7 @@ pkg_setup() {
 		NV_X11="${S}"
 		NV_SOVER=${PV}
 	else
-		die "Could not determine proper NVIDIA package"
+		die "Could not determine kernel for NVIDIA package"
 	fi
 }
 
@@ -233,10 +169,7 @@ src_prepare() {
 
 src_compile() {
 	cd "${NV_SRC}"
-	if use kernel_FreeBSD; then
-		MAKE="$(get_bmake)" CFLAGS="-Wno-sign-compare" emake CC="$(tc-getCC)" \
-			LD="$(tc-getLD)" LDFLAGS="$(raw-ldflags)" || die
-	elif use driver && use kernel_linux; then
+	if use driver && use kernel_linux; then
 		BUILD_TARGETS=module linux-mod_src_compile \
 			KERNELRELEASE="${KV_FULL}" \
 			src="${KERNEL_DIR}"
@@ -467,22 +400,13 @@ src_install() {
 	is_final_abi || die "failed to iterate through all ABIs"
 
 	# Documentation
-	if use kernel_FreeBSD; then
-		dodoc "${NV_DOC}/README"
-		use X && doman "${NV_MAN}"/nvidia-xconfig.1
-		use tools && doman "${NV_MAN}"/nvidia-settings.1
-	else
-		# Docs
-		newdoc "${NV_DOC}/README.txt" README
-		dodoc "${NV_DOC}/NVIDIA_Changelog"
-		doman "${NV_MAN}"/nvidia-smi.1
-		use X && doman "${NV_MAN}"/nvidia-xconfig.1
-		use tools && doman "${NV_MAN}"/nvidia-settings.1
-		doman "${NV_MAN}"/nvidia-cuda-mps-control.1
-	fi
-
+	newdoc "${NV_DOC}/README.txt" README
+	dodoc "${NV_DOC}/NVIDIA_Changelog"
+	doman "${NV_MAN}"/nvidia-smi.1
+	use X && doman "${NV_MAN}"/nvidia-xconfig.1
+	use tools && doman "${NV_MAN}"/nvidia-settings.1
+	doman "${NV_MAN}"/nvidia-cuda-mps-control.1
 	readme.gentoo_create_doc
-
 	docinto html
 	dodoc -r ${NV_DOC}/html/*
 }
@@ -539,12 +463,6 @@ src_install-libs() {
 		then
 			NV_GLX_LIBRARIES+=(
 				"libnvidia-egl-wayland.so.1.1.3"
-			)
-		fi
-
-		if use kernel_FreeBSD; then
-			NV_GLX_LIBRARIES+=(
-				"libnvidia-tls.so.${NV_SOVER}"
 			)
 		fi
 
@@ -606,32 +524,6 @@ pkg_postinst() {
 	fi
 
 	readme.gentoo_print_elog
-
-	if ! use X; then
-		elog "You have elected to not install the X.org driver. Along with"
-		elog "this the OpenGL libraries and VDPAU libraries were not"
-		elog "installed. Additionally, once the driver is loaded your card"
-		elog "and fan will run at max speed which may not be desirable."
-		elog "Use the 'nvidia-smi' init script to have your card and fan"
-		elog "speed scale appropriately."
-		elog
-	fi
-	if ! use tools; then
-		elog "USE=tools controls whether the nvidia-settings application"
-		elog "is installed. If you would like to use it, enable that"
-		elog "flag and re-emerge this ebuild. Optionally you can install"
-		elog "media-video/nvidia-settings"
-		elog
-	fi
-
-	elog "To enable nvidia sleep services under systemd, run these commands:"
-	elog "	systemctl enable nvidia-suspend.service"
-	elog "	systemctl enable nvidia-hibernate.service"
-	elog "	systemctl enable nvidia-resume.service"
-	elog "Set the NVreg_TemporaryFilePath kernel module parameter to a"
-	elog "suitable path in case the default of /tmp does not work for you"
-	elog "For more information see:"
-	elog "${ROOT}/usr/share/doc/${PF}/html/powermanagement.html"
 }
 
 pkg_prerm() {
