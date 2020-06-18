@@ -1,0 +1,52 @@
+changeset:   531979:da64e8ddf04b
+tag:         tip
+parent:      531977:9a0589e208e8
+user:        Martin Stransky <stransky@redhat.com>
+date:        Mon May 25 22:29:45 2020 +0200
+files:       dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp
+description:
+Bug 1632456 [Wayland] Release mVAAPIDeviceContext when FFmpegVideoDecoder::CreateVAAPIDeviceContext() fails, r?jya
+
+Differential Revision: https://phabricator.services.mozilla.com/D76745
+
+
+diff --git a/dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp b/dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp
+--- a/dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp
++++ b/dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp
+@@ -187,32 +187,35 @@ bool FFmpegVideoDecoder<LIBAV_VER>::Crea
+     return false;
+   }
+   AVHWDeviceContext* hwctx = (AVHWDeviceContext*)mVAAPIDeviceContext->data;
+   AVVAAPIDeviceContext* vactx = (AVVAAPIDeviceContext*)hwctx->hwctx;
+ 
+   wl_display* display = widget::WaylandDisplayGetWLDisplay();
+   if (!display) {
+     FFMPEG_LOG("Can't get default wayland display.");
++    mLib->av_buffer_unref(&mVAAPIDeviceContext);
+     return false;
+   }
+   mDisplay = mLib->vaGetDisplayWl(display);
+ 
+   hwctx->user_opaque = new VAAPIDisplayHolder(mLib, mDisplay);
+   hwctx->free = VAAPIDisplayReleaseCallback;
+ 
+   int major, minor;
+   int status = mLib->vaInitialize(mDisplay, &major, &minor);
+   if (status != VA_STATUS_SUCCESS) {
++    mLib->av_buffer_unref(&mVAAPIDeviceContext);
+     return false;
+   }
+ 
+   vactx->display = mDisplay;
+ 
+   if (mLib->av_hwdevice_ctx_init(mVAAPIDeviceContext) < 0) {
++    mLib->av_buffer_unref(&mVAAPIDeviceContext);
+     return false;
+   }
+ 
+   mCodecContext->hw_device_ctx = mLib->av_buffer_ref(mVAAPIDeviceContext);
+   return true;
+ }
+ 
+ MediaResult FFmpegVideoDecoder<LIBAV_VER>::InitVAAPIDecoder() {
+

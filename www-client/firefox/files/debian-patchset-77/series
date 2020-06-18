@@ -1,0 +1,3 @@
+fixes/Allow-.js-preference-files-to-set-locked-prefs-with-.patch
+prefs/Set-DPI-to-system-settings.patch
+debian-hacks/Don-t-build-image-gtests.patch

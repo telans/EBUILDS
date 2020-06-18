@@ -1,0 +1,14 @@
+diff -up firefox-76.0.1/dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp.old firefox-76.0.1/dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp
+--- firefox-76.0.1/dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp.old	2020-05-13 14:28:26.556800474 +0200
++++ firefox-76.0.1/dom/media/platforms/ffmpeg/FFmpegVideoDecoder.cpp	2020-05-13 14:28:31.562768959 +0200
+@@ -43,7 +43,7 @@ typedef int VAStatus;
+ #endif
+ 
+ // Use some extra HW frames for potential rendering lags.
+-#define EXTRA_HW_FRAMES 6
++#define EXTRA_HW_FRAMES 20
+ 
+ typedef mozilla::layers::Image Image;
+ typedef mozilla::layers::PlanarYCbCrImage PlanarYCbCrImage;
+diff -up firefox-76.0.1/media/libyuv/libyuv/tools_libyuv/autoroller/unittests/testdata/DEPS.chromium.old firefox-76.0.1/media/libyuv/libyuv/tools_libyuv/autoroller/unittests/testdata/DEPS.chromium
+diff -up firefox-76.0.1/media/webrtc/trunk/Makefile.old firefox-76.0.1/media/webrtc/trunk/Makefile
