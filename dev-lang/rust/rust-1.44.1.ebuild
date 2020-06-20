@@ -8,6 +8,7 @@ PYTHON_COMPAT=( python3_{7..9} )
 inherit bash-completion-r1 check-reqs estack flag-o-matic llvm multiprocessing multilib-build python-any-r1 rust-toolchain toolchain-funcs
 
 ABI_VER="$(ver_cut 1-2)"
+SLOT="stable/${ABI_VER}"
 MY_P="rustc-${PV}"
 SRC="${MY_P}-src.tar.xz"
 KEYWORDS="~amd64"
