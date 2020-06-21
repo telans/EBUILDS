@@ -90,6 +90,7 @@ PATCHES=(
 	# Taken from AUR package which took from:
 	# https://gitlab.com/snippets/1945940
 	"${FILESDIR}"/vulkan-kernel-5.6.patch
+	"${FILESDIR}"/vulkan-kernel-5.7.patch
 )
 
 pkg_setup() {
