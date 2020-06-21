@@ -108,7 +108,6 @@ RESTRICT="test"
 PATCHES=(
 	"${FILESDIR}"/0012-Ignore-broken-and-non-applicable-tests.patch
 	"${FILESDIR}"/rust-pr71782-Use-a-non-existent-test-path.patch
-	"${FILESDIR}"/1.44.0-libressl.patch
 )
 
 S="${WORKDIR}/${MY_P}-src"
@@ -187,7 +186,7 @@ src_prepare() {
 	# it's a shebang and make them executable. Then brp-mangle-shebangs gets upset...
 	find -name '*.rs' -type f -perm /111 -exec chmod -v -x '{}' '+'
 
-	use libressl && eapply ${FILESDIR}/${PV}-libressl.patch
+	use libressl && eapply ${FILESDIR}/libressl.patch
 
 	default
 }
