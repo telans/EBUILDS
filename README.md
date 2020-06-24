@@ -2,7 +2,7 @@
 
 ### Highlights:
 
-app-editors/micro, sys-fs/diskonaut, dev-vcs/git-extras, app-emulation/{wine-staging,dxvk,vkd3d}
+app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{wine-staging,dxvk,vkd3d}
 
 ---
 
@@ -31,6 +31,10 @@ app-editors/micro, sys-fs/diskonaut, dev-vcs/git-extras, app-emulation/{wine-sta
 #### dev-vcs
 
 - [git-extras-9999](https://github.com/tj/git-extras): Extended `git` utilities
+
+#### games-util
+
+- [samrewritten](https://github.com/PaulCombal/SamRewritten): A Steam achievement manager For Linux
 
 #### media-fonts
 

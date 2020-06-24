@@ -1,0 +1,33 @@
+diff --git a/Makefile b/Makefile
+index b7c176d..9d2d7db 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,10 +4,11 @@ RMDIR=rm -rf
+ HFILES:=$(shell find src/ -type f -iname *.h -print)
+ CXXFILES:=$(shell find src/ -type f -iname *.cpp -print)
+ GTKFLAGS=$(shell pkg-config gtkmm-3.0 --cflags --libs)
+-CXXFLAGS=$(GTKFLAGS) -Wall -lsteam_api -lcurl -lyajl -ldl
++CXXFLAGS+=$(GTKFLAGS) -Wall -lsteam_api -lcurl -lyajl -ldl
+ LDFLAGS=-L${CURDIR}/bin
+ OBJDIR=obj
+ OBJS=$(addprefix ${OBJDIR}/,$(subst .cpp,.o,${CXXFILES}))
++PREFIX=/usr
+ 
+ all: CXXFLAGS += -O3
+ all: ${CURDIR}/bin/samrewritten
+@@ -21,6 +22,15 @@ dev: ${CURDIR}/bin/samrewritten
+ clean:
+ 	${RMDIR} ${OBJDIR}
+ 
++.PHONY: install
++install: bin/launch.sh bin/samrewritten bin/libsteam_api.so
++	mkdir -p ${DESTDIR}${PREFIX}/lib64/SamRewritten/{bin,glade,assets}
++	cp $^ ${DESTDIR}${PREFIX}/lib64/SamRewritten/bin/
++	mkdir -p ${DESTDIR}${PREFIX}/bin
++	ln -s ${DESTDIR}${PREFIX}/lib64/SamRewritten/bin/launch.sh ${DESTDIR}${PREFIX}/bin/samrewritten
++	cp glade/main_window.glade ${DESTDIR}${PREFIX}/lib64/SamRewritten/glade/main_window.glade
++	cp assets/icon_256.png ${DESTDIR}${PREFIX}/lib64/SamRewritten/assets/
++
+ ${CURDIR}/bin/samrewritten: $(OBJS)
+ 	${CXX} -o ${CURDIR}/bin/samrewritten $(OBJS) ${LDFLAGS} ${CXXFLAGS}
+ 
