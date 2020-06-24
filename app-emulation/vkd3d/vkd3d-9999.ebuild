@@ -13,7 +13,8 @@ RDEPEND="spirv-tools? ( dev-util/spirv-tools:=[${MULTILIB_USEDEP}] )
 		media-libs/vulkan-loader[${MULTILIB_USEDEP},X]
 		x11-libs/xcb-util:=[${MULTILIB_USEDEP}]
 		x11-libs/xcb-util-keysyms:=[${MULTILIB_USEDEP}]
-		x11-libs/xcb-util-wm:=[${MULTILIB_USEDEP}]"
+		x11-libs/xcb-util-wm:=[${MULTILIB_USEDEP}]
+		app-emulation/wine-staging:=[${MULTILIB_USEDEP}]"
 
 DEPEND="${RDEPEND}
 		dev-util/spirv-headers
