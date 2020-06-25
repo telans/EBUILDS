@@ -12,7 +12,7 @@ SRC_URI="https://github.com/PaulCombal/${PN}/archive/${PV}.tar.gz"
 
 LICENSE="GPL-3.0"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="amd64 x86"
 IUSE="+zenity"
 
 S="${WORKDIR}/SamRewritten-${PV}"
@@ -30,10 +30,7 @@ src_prepare() {
 }
 
 src_install() {
-    emake DESTDIR=${D} install
-    newicon -s 64 assets/icon_64.png samrewritten.png
-    newicon -s 256 assets/icon_64.png samrewritten.png
-    domenu package/samrewritten.desktop
+    emake LIBDIR=lib64 DESTDIR=${D} install
 }
 
 pkg_postinst() {
