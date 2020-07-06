@@ -8,9 +8,7 @@ inherit multilib-minimal autotools git-r3
 AUTOTOOLS_AUTORECONF="1"
 EGIT_REPO_URI="https://github.com/HansKristian-Work/vkd3d.git"
 
-IUSE="spirv-tools"
-RDEPEND="spirv-tools? ( dev-util/spirv-tools:=[${MULTILIB_USEDEP}] )
-		media-libs/vulkan-loader[${MULTILIB_USEDEP},X]
+RDEPEND="media-libs/vulkan-loader[${MULTILIB_USEDEP},X]
 		x11-libs/xcb-util:=[${MULTILIB_USEDEP}]
 		x11-libs/xcb-util-keysyms:=[${MULTILIB_USEDEP}]
 		x11-libs/xcb-util-wm:=[${MULTILIB_USEDEP}]
@@ -33,9 +31,5 @@ src_prepare() {
 }
 
 multilib_src_configure() {
-	local myconf=(
-		$(use_with spirv-tools)
-	)
-
 	ECONF_SOURCE=${S} econf "${myconf[@]}"
 }
