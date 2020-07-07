@@ -17,6 +17,7 @@ CRATES="addr2line-0.12.1
         backtrace-0.3.49
         bitflags-1.2.1
         cassowary-0.3.0
+        cc-1.0.55
         cfg-if-0.1.10
         clap-2.33.1
         clicolors-control-1.0.1
@@ -47,6 +48,7 @@ CRATES="addr2line-0.12.1
         maybe-uninit-2.0.0
         memoffset-0.5.4
         miniz_oxide-0.3.7
+        nix-0.17.0
         num_cpus-1.13.0
         numtoa-0.1.0
         object-0.20.0
@@ -83,6 +85,7 @@ CRATES="addr2line-0.12.1
         unicode-xid-0.2.0
         vec_map-0.8.2
         version_check-0.9.2
+        void-1.0.2
         winapi-0.3.8
         winapi-i686-pc-windows-gnu-0.4.0
         winapi-x86_64-pc-windows-gnu-0.4.0
