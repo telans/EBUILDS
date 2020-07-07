@@ -24,6 +24,8 @@ HOMEPAGE="https://github.com/HansKristian-Work/vkd3d-proton/"
 LICENSE="LGPL-2.1"
 SLOT="0"
 
+S="${WORKDIR}/${PN}-${PV}"
+
 src_prepare() {
 	default
 }
@@ -43,4 +45,8 @@ multilib_src_compile() {
 
 multilib_src_install() {
 	meson_src_install
+}
+
+multilib_src_install_all() {
+	doheader ${S}/include/*.h
 }
