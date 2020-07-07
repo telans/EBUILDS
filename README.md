@@ -15,18 +15,14 @@ app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{win
 
 #### app-emulation
 
-- [wine-staging](https://github.com/wine-staging/wine-staging): Wine with staging patches
+- [wine-staging](https://github.com/wine-staging/wine-staging): wine-staging with MinGW
 - [dxvk-9999](https://github.com/doitsujin/dxvk): Vulkan-based implementation of D3D9, D3D10 and D3D11 for Linux / Wine
-- [vkd3d-9999](https://github.com/HansKristian-Work/vkd3d): Development branches for vkd3d
+- [vkd3d-9999, vkd3d-proton-9999](https://github.com/HansKristian-Work/vkd3d): Development branches for Proton's Direct3D 12 implementation.
 
 #### dev-dotnet
 
 - [dotnetcore-sdk-bin](https://dotnet.microsoft.com/download/dotnet-core/3.1): .NET Core (binary version)
 - [dotnetcore-sdk-bin-common](https://dotnet.microsoft.com/download/dotnet-core/3.1): .NET Core common package files (binary version)
-
-#### dev-lang
-
-- [rust](https://github.com/rust-lang/rust): The Rust programming language (patches from [pg_overlay](https://github.com/perfect7gentleman/pg_overlay))
 
 #### dev-vcs
 
@@ -43,10 +39,6 @@ app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{win
 #### sys-fs
 
 - [diskonaut](https://github.com/imsnif/diskonaut): A terminal disk space viewer reminiscent of WinDirStat
-
-#### www-client
-
-- [firefox](https://www.mozilla.org/en-US/firefox/new/): Firefox browser (patches from [pg_overlay](https://github.com/perfect7gentleman/pg_overlay))
 
 #### x11-drivers
 
