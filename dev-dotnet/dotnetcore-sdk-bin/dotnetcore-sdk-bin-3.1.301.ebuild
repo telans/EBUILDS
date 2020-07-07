@@ -9,9 +9,7 @@ DESCRIPTION=".NET Core SDK - binary precompiled for glibc"
 HOMEPAGE="https://www.microsoft.com/net/core"
 LICENSE="MIT"
 
-SRC_URI="
-amd64? ( https://download.visualstudio.microsoft.com/download/pr/0c795076-b679-457e-8267-f9dd20a8ca28/02446ea777b6f5a5478cd3244d8ed65b/dotnet-sdk-${PV}-linux-x64.tar.gz )
-"
+SRC_URI="https://download.visualstudio.microsoft.com/download/pr/0c795076-b679-457e-8267-f9dd20a8ca28/02446ea777b6f5a5478cd3244d8ed65b/dotnet-sdk-${PV}-linux-x64.tar.gz"
 
 SLOT="3.1"
 KEYWORDS="~amd64"
