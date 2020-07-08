@@ -1,0 +1,21 @@
+diff --git a/meson.build b/meson.build
+index 125e2bd..5a76aa0 100644
+--- a/meson.build
++++ b/meson.build
+@@ -77,6 +77,16 @@ vkd3d_version = vcs_tag(
+ dxil_spirv = subproject('dxil-spirv')
+ dxil_spirv_dep = dxil_spirv.get_variable('dxil_spirv_dep')
+ 
++pkg = import('pkgconfig')
++	vkd3d = library('vkd3d')
++	pkg.generate(vkd3d, filebase : 'libvkd3d', subdirs : 'vkd3d', description : 'The VKD3D 3D Graphics Library')
++
++	vkd3dutils = library('vkd3d-utils')
++	pkg.generate(vkd3dutils, filebase : 'libvkd3d-utils', subdirs : 'vkd3d', description : 'The VKD3D 3D Graphics Utility Library')
++
++	vkd3dshader = library('vkd3d-shader')
++	pkg.generate(vkd3dshader, filebase : 'libvkd3d-shader', subdirs : 'vkd3d', description : 'The VKD3D Shader Translation Library')
++
+ subdir('include')
+ subdir('libs')
+ 
