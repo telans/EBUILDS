@@ -16,7 +16,6 @@ if [[ ${PV} == "9999" ]] ; then
 	EGIT_BRANCH="master"
 	inherit git-r3
 	SRC_URI=""
-	#KEYWORDS=""
 else
 	MAJOR_V=$(ver_cut 1)
 	SRC_URI="https://dl.winehq.org/wine/source/${MAJOR_V}.x/${MY_P}.tar.xz"
@@ -24,7 +23,7 @@ else
 fi
 S="${WORKDIR}/${MY_P}"
 
-STAGING_P="wine-staging-${PV}"
+STAGING_P="wine-staging-${PV}.1"
 STAGING_DIR="${WORKDIR}/${STAGING_P}"
 GWP_V="20200523"
 PATCHDIR="${WORKDIR}/gentoo-wine-patches"
@@ -32,27 +31,23 @@ PATCHDIR="${WORKDIR}/gentoo-wine-patches"
 DESCRIPTION="Free implementation of Windows(tm) on Unix, with Wine-Staging patchset"
 HOMEPAGE="https://www.winehq.org/"
 SRC_URI="${SRC_URI}
-	https://dev.gentoo.org/~sarnex/distfiles/wine/gentoo-wine-patches-${GWP_V}.tar.xz
-"
+	https://dev.gentoo.org/~sarnex/distfiles/wine/gentoo-wine-patches-${GWP_V}.tar.xz"
 
 if [[ ${PV} == "9999" ]] ; then
 	STAGING_EGIT_REPO_URI="https://github.com/wine-staging/wine-staging.git"
 else
 	SRC_URI="${SRC_URI}
-	staging? ( https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${STAGING_P}.tar.gz )"
+		https://github.com/wine-staging/wine-staging/archive/v${PV}.1.tar.gz -> ${STAGING_P}.tar.gz"
 fi
 
 LICENSE="LGPL-2.1"
 SLOT="${PV}"
-IUSE="+abi_x86_32 +abi_x86_64 +alsa capi cups custom-cflags dos elibc_glibc +faudio +fontconfig +gcrypt +gecko gphoto2 gsm gssapi gstreamer +jpeg kerberos kernel_FreeBSD +lcms ldap +mono mp3 ncurses netapi nls odbc openal opencl +opengl osmesa oss +perl pcap pipelight +png prelink pulseaudio +realtime +run-exes samba scanner sdl selinux +ssl staging test themes +threads +truetype udev +udisks +unwind v4l vaapi vkd3d vulkan +X +xcomposite xinerama +xml mingw"
+IUSE="+abi_x86_32 +abi_x86_64 +alsa capi cups custom-cflags dos elibc_glibc +faudio +fontconfig +gcrypt +gecko gphoto2 gsm gssapi +gstreamer +jpeg kerberos +lcms ldap +mono mp3 ncurses netapi nls odbc openal opencl +opengl osmesa oss +perl pcap pipelight +png prelink pulseaudio +realtime +run-exes samba scanner sdl selinux +ssl test themes +threads +truetype udev +udisks +unwind v4l vaapi vkd3d +vulkan +X +xcomposite xinerama +xml +mingw"
 REQUIRED_USE="|| ( abi_x86_32 abi_x86_64 )
 	X? ( truetype )
 	elibc_glibc? ( threads )
 	osmesa? ( opengl )
-	pipelight? ( staging )
 	test? ( abi_x86_32 )
-	themes? ( staging )
-	vaapi? ( staging )
 	vkd3d? ( vulkan )" # osmesa-opengl #286560 # X-truetype #551124
 
 # FIXME: the test suite is unsuitable for us; many tests require net access
@@ -85,6 +80,8 @@ COMMON_DEPEND="
 	kerberos? ( virtual/krb5:0=[${MULTILIB_USEDEP}] )
 	lcms? ( media-libs/lcms:2=[${MULTILIB_USEDEP}] )
 	ldap? ( net-nds/openldap:=[${MULTILIB_USEDEP}] )
+	mingw? ( cross-i686-w64-mingw32/gcc
+		cross-x86_64-w64-mingw32/gcc )
 	mp3? ( >=media-sound/mpg123-1.5.0[${MULTILIB_USEDEP}] )
 	ncurses? ( >=sys-libs/ncurses-5.2:0=[${MULTILIB_USEDEP}] )
 	netapi? ( net-fs/samba[netapi(+),${MULTILIB_USEDEP}] )
@@ -103,7 +100,7 @@ COMMON_DEPEND="
 	scanner? ( media-gfx/sane-backends:=[${MULTILIB_USEDEP}] )
 	sdl? ( media-libs/libsdl2:=[haptic,joystick,${MULTILIB_USEDEP}] )
 	ssl? ( net-libs/gnutls:=[${MULTILIB_USEDEP}] )
-	staging? ( sys-apps/attr[${MULTILIB_USEDEP}] )
+	sys-apps/attr[${MULTILIB_USEDEP}]
 	themes? (
 		dev-libs/glib:2[${MULTILIB_USEDEP}]
 		x11-libs/cairo[${MULTILIB_USEDEP}]
@@ -150,10 +147,8 @@ DEPEND="${COMMON_DEPEND}
 	virtual/yacc
 	X? ( x11-base/xorg-proto )
 	prelink? ( sys-devel/prelink )
-	staging? (
-		dev-lang/perl
-		dev-perl/XML-Simple
-	)
+	dev-lang/perl
+	dev-perl/XML-Simple
 	xinerama? ( x11-base/xorg-proto )"
 
 # These use a non-standard "Wine" category, which is provided by
@@ -176,82 +171,14 @@ if [[ ${#PATCHES_BIN[@]} -ge 1 ]] || [[ ${PV} == 9999 ]]; then
 	DEPEND+=" dev-util/patchbin"
 fi
 
-wine_compiler_check() {
-	[[ ${MERGE_TYPE} = "binary" ]] && return 0
-
-	# GCC-specific bugs
-	if tc-is-gcc; then
-		# bug #549768
-		if use abi_x86_64 && [[ $(gcc-major-version) = 5 && $(gcc-minor-version) -le 2 ]]; then
-			ebegin "Checking for gcc-5 ms_abi compiler bug"
-			$(tc-getCC) -O2 "${PATCHDIR}/files/pr66838.c" -o "${T}"/pr66838 || die
-			# Run in subshell to prevent "Aborted" message
-			( "${T}"/pr66838 || false ) >/dev/null 2>&1
-			if ! eend $?; then
-				eerror "64-bit wine cannot be built with gcc-5.1 or initial patchset of 5.2.0"
-				eerror "due to compiler bugs; please re-emerge the latest gcc-5.2.x ebuild,"
-				eerror "or use gcc-config to select a different compiler version."
-				eerror "See https://bugs.gentoo.org/549768"
-				eerror
-				return 1
-			fi
-		fi
-		# bug #574044
-		if use abi_x86_64 && [[ $(gcc-major-version) = 5 && $(gcc-minor-version) = 3 ]]; then
-			ebegin "Checking for gcc-5-3 stack realignment compiler bug"
-			# Compile in subshell to prevent "Aborted" message
-			( $(tc-getCC) -O2 -mincoming-stack-boundary=3 "${PATCHDIR}/files/pr69140.c" -o "${T}"/pr69140 ) >/dev/null 2>&1
-			if ! eend $?; then
-				eerror "Wine cannot be built with this version of gcc-5.3"
-				eerror "due to compiler bugs; please re-emerge the latest gcc-5.3.x ebuild,"
-				eerror "or use gcc-config to select a different compiler version."
-				eerror "See https://bugs.gentoo.org/574044"
-				eerror
-				return 1
-			fi
-		fi
-	fi
-
-	# Ensure compiler support
-	if use abi_x86_64; then
-		ebegin "Checking for 64-bit compiler with builtin_ms_va_list support"
-		# Compile in subshell to prevent "Aborted" message
-		( $(tc-getCC) -O2 "${PATCHDIR}/files/builtin_ms_va_list.c" -o "${T}"/builtin_ms_va_list >/dev/null 2>&1)
-		if ! eend $?; then
-			eerror "This version of $(tc-getCC) does not support builtin_ms_va_list, can't enable 64-bit wine"
-			eerror
-			eerror "You need gcc-4.4+ or clang 3.8+ to build 64-bit wine"
-			eerror
-			return 1
-		fi
+patches() {
+	if use vkd3d; then
+		eapply "${FILESDIR}/d3d12-fixes.patch"
 	fi
 }
 
 wine_build_environment_check() {
 	[[ ${MERGE_TYPE} = "binary" ]] && return 0
-
-	if use abi_x86_64; then
-		if tc-is-gcc && [[ $(gcc-major-version) -lt 4 || ( $(gcc-major-version) -eq 4 && $(gcc-minor-version) -lt 4 ) ]]; then
-			eerror "You need gcc-4.4+ to compile 64-bit wine"
-			die
-		elif tc-is-clang && [[ $(clang-major-version) -lt 3 || ( $(clang-major-version) -eq 3 && $(clang-minor-version) -lt 8 ) ]]; then
-			eerror "You need clang-3.8+ to compile 64-bit wine"
-			die
-		fi
-	fi
-	if tc-is-gcc && [[ $(gcc-major-version) -eq 5 && $(gcc-minor-version) -le 3 ]]; then
-		ewarn "GCC-5.0-5.3 suffered from compiler bugs and are no longer supported by"
-		ewarn "Gentoo's Toolchain Team. If your ebuild fails the compiler checks in"
-		ewarn "the configure phase, either update your compiler or switch to <5.0 || >=5.4"
-	fi
-	if tc-is-gcc && [[ $(gcc-major-version) -eq 5 && $(gcc-minor-version) -eq 4 ]]; then
-		if has "-march=i686" ${CFLAGS} && ! has "-mtune=generic" ${CFLAGS}; then
-			ewarn "Compilation can hang with CFLAGS=\"-march=i686\".  You can temporarily work"
-			ewarn "around this by adding \"-mtune=generic\" to your CFLAGS for wine."
-			ewarn "See package.env in man 5 portage for more information on how to do this."
-			ewarn "See https://bugs.gentoo.org/show_bug.cgi?id=613128 for more details"
-		fi
-	fi
 
 	if use abi_x86_32 && use opencl && [[ "$(eselect opencl show 2> /dev/null)" == "intel" ]]; then
 		eerror "You cannot build wine with USE=opencl because intel-ocl-sdk is 64-bit only."
@@ -261,47 +188,12 @@ wine_build_environment_check() {
 	fi
 }
 
-wine_env_vcs_vars() {
-	local pn_live_var="${PN//[-+]/_}_LIVE_COMMIT"
-	local pn_live_val="${pn_live_var}"
-	eval pn_live_val='$'${pn_live_val}
-	if [[ ! -z ${pn_live_val} ]]; then
-		if use staging; then
-			eerror "Because of the multi-repo nature of ${MY_PN}, ${pn_live_var}"
-			eerror "cannot be used to set the commit. Instead, you may use the"
-			eerror "environment variables:"
-			eerror "  EGIT_OVERRIDE_COMMIT_WINE"
-			eerror "  EGIT_OVERRIDE_COMMIT_WINE_STAGING_WINE_STAGING"
-			eerror
-			return 1
-		fi
-	fi
-	if [[ ! -z ${EGIT_COMMIT} ]]; then
-		eerror "Commits must now be specified using the environment variables:"
-		eerror "  EGIT_OVERRIDE_COMMIT_WINE"
-		eerror "  EGIT_OVERRIDE_COMMIT_WINE_STAGING_WINE_STAGING"
-		eerror
-		return 1
-	fi
-}
-
 pkg_pretend() {
 	wine_build_environment_check || die
-
-	# Verify OSS support
-	if use oss && ! use kernel_FreeBSD; then
-		if ! has_version ">=media-sound/oss-4"; then
-			eerror "You cannot build wine with USE=oss without having support from a"
-			eerror "FreeBSD kernel or >=media-sound/oss-4 (only available through external repos)"
-			eerror
-			die
-		fi
-	fi
 }
 
 pkg_setup() {
 	wine_build_environment_check || die
-	wine_env_vcs_vars || die
 
 	WINE_VARIANT="${PN#wine}-${PV}"
 	WINE_VARIANT="${WINE_VARIANT#-}"
@@ -319,28 +211,16 @@ pkg_setup() {
 src_unpack() {
 	if [[ ${PV} == "9999" ]] ; then
 		EGIT_CHECKOUT_DIR="${S}" git-r3_src_unpack
-		if use staging; then
-			local CURRENT_WINE_COMMIT=${EGIT_VERSION}
-
-			EGIT_CHECKOUT_DIR="${STAGING_DIR}" EGIT_REPO_URI="${STAGING_EGIT_REPO_URI}" git-r3_src_unpack
-
-			local COMPAT_WINE_COMMIT=$("${STAGING_DIR}/patches/patchinstall.sh" --upstream-commit) || die
-
-			if [[ "${CURRENT_WINE_COMMIT}" != "${COMPAT_WINE_COMMIT}" ]]; then
-				einfo "The current Staging patchset is not guaranteed to apply on this WINE commit."
-				einfo "If src_prepare fails, try emerging with the env var WINE_COMMIT."
-				einfo "Example: EGIT_OVERRIDE_COMMIT_WINE=${COMPAT_WINE_COMMIT} emerge -1 wine"
-			fi
-		fi
+		local CURRENT_WINE_COMMIT=${EGIT_VERSION}
+		EGIT_CHECKOUT_DIR="${STAGING_DIR}" EGIT_REPO_URI="${STAGING_EGIT_REPO_URI}" git-r3_src_unpack
+		local COMPAT_WINE_COMMIT=$("${STAGING_DIR}/patches/patchinstall.sh" --upstream-commit) || die
 	fi
 
 	default
-
 	l10n_find_plocales_changes "${S}/po" "" ".po"
 }
 
 src_prepare() {
-
 	eapply_bin(){
 		local patch
 		for patch in ${PATCHES_BIN[@]}; do
@@ -349,23 +229,17 @@ src_prepare() {
 	}
 
 	local md5="$(md5sum server/protocol.def)"
+	local STAGING_EXCLUDE="-W winemenubuilder-Desktop_Icon_Path" #652176
+	use pipelight || STAGING_EXCLUDE="${STAGING_EXCLUDE} -W Pipelight"
 
-	if use staging; then
-		ewarn "Applying the Wine-Staging patchset. Any bug reports to the"
-		ewarn "Wine bugzilla should explicitly state that staging was used."
-
-		local STAGING_EXCLUDE="-W winemenubuilder-Desktop_Icon_Path" #652176
-		use pipelight || STAGING_EXCLUDE="${STAGING_EXCLUDE} -W Pipelight"
-
-		# Launch wine-staging patcher in a subshell, using eapply as a backend, and gitapply.sh as a backend for binary patches
-		ebegin "Running Wine-Staging patch installer"
-		(
-			set -- DESTDIR="${S}" --backend=eapply --no-autoconf --all ${STAGING_EXCLUDE}
-			cd "${STAGING_DIR}/patches"
-			source "${STAGING_DIR}/patches/patchinstall.sh"
-		)
-		eend $? || die "Failed to apply Wine-Staging patches"
-	fi
+	# Launch wine-staging patcher in a subshell, using eapply as a backend, and gitapply.sh as a backend for binary patches
+	ebegin "Running Wine-Staging patch installer"
+	(
+		set -- DESTDIR="${S}" --backend=eapply --no-autoconf --all ${STAGING_EXCLUDE}
+		cd "${STAGING_DIR}/patches"
+		source "${STAGING_DIR}/patches/patchinstall.sh"
+	)
+	eend $? || die "Failed to apply Wine-Staging patches"
 
 	default
 	eapply_bin
@@ -381,17 +255,11 @@ src_prepare() {
 		sed -i '/^MimeType/d' loader/wine.desktop || die #117785
 	fi
 
-	# Edit wine.desktop to work for specific variant
 	sed -e "/^Exec=/s/wine /wine-${WINE_VARIANT} /" -i loader/wine.desktop || die
-
-	# hi-res default icon, #472990, https://bugs.winehq.org/show_bug.cgi?id=24652
 	cp "${PATCHDIR}/files/oic_winlogo.ico" dlls/user32/resources/ || die
 
 	l10n_get_locales > po/LINGUAS || die # otherwise wine doesn't respect LINGUAS
 
-	# Fix manpage generation for locales #469418 and abi_x86_64 #617864
-
-	# Duplicate manpages input files for wine64
 	local f
 	for f in loader/*.man.in; do
 		cp ${f} ${f/wine/wine64} || die
@@ -416,8 +284,6 @@ src_prepare() {
 }
 
 src_configure() {
-	wine_compiler_check || die
-
 	export LDCONFIG=/bin/true
 	use custom-cflags || strip-flags
 
@@ -484,9 +350,6 @@ multilib_src_configure() {
 		$(use_with xinerama)
 		$(use_with xml)
 		$(use_with xml xslt)
-	)
-
-	use staging && myconf+=(
 		--with-xattr
 		$(use_with themes gtk3)
 		$(use_with vaapi va)
@@ -503,9 +366,6 @@ multilib_src_configure() {
 		else
 			myconf+=( --disable-win64 )
 		fi
-
-		# Note: using --with-wine64 results in problems with multilib.eclass
-		# CC/LD hackery. We're using separate tools instead.
 	fi
 
 	ECONF_SOURCE=${S} \
@@ -577,42 +437,15 @@ multilib_src_install_all() {
 
 pkg_postinst() {
 	eselect wine register ${P}
-	if [[ ${PN} == "wine-vanilla" ]]; then
-		eselect wine register --vanilla ${P} || die
-	else
-		if use staging; then
-			eselect wine register --staging ${P} || die
-		fi
-	fi
-
+	eselect wine register --staging ${P} || die
 	eselect wine update --all --if-unset || die
 
 	xdg_desktop_database_update
-
-	if ! use gecko; then
-		ewarn "Without Wine Gecko, wine prefixes will not have a default"
-		ewarn "implementation of iexplore.  Many older windows applications"
-		ewarn "rely upon the existence of an iexplore implementation, so"
-		ewarn "you will likely need to install an external one, like via winetricks"
-	fi
-	if ! use mono; then
-		ewarn "Without Wine Mono, wine prefixes will not have a default"
-		ewarn "implementation of .NET.  Many windows applications rely upon"
-		ewarn "the existence of a .NET implementation, so you will likely need"
-		ewarn "to install an external one, like via winetricks"
-	fi
 }
 
 pkg_prerm() {
 	eselect wine deregister ${P}
-	if [[ ${PN} == "wine-vanilla" ]]; then
-		eselect wine deregister --vanilla ${P} || die
-	else
-		if use staging; then
-			eselect wine deregister --staging ${P} || die
-		fi
-	fi
-
+	eselect wine deregister --staging ${P} || die
 	eselect wine update --all --if-unset || die
 }
 
