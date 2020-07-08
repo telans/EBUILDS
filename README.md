@@ -2,7 +2,7 @@
 
 ### Highlights:
 
-app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{wine-staging,dxvk,vkd3d}
+app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{wine-staging,dxvk,vkd3d-proton}
 
 ---
 
@@ -17,7 +17,7 @@ app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{win
 
 - [wine-staging](https://github.com/wine-staging/wine-staging): wine-staging with MinGW
 - [dxvk-9999](https://github.com/doitsujin/dxvk): Vulkan-based implementation of D3D9, D3D10 and D3D11 for Linux / Wine
-- [vkd3d-9999, vkd3d-proton-9999](https://github.com/HansKristian-Work/vkd3d): Development branches for Proton's Direct3D 12 implementation.
+- [vkd3d-proton-9999](https://github.com/HansKristian-Work/vkd3d): Development branches for Proton's Direct3D 12 implementation
 
 #### dev-dotnet
 
@@ -34,7 +34,7 @@ app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{win
 
 #### media-fonts
 
-- [siji](https://github.com/stark/siji): An iconic bitmap font based on Stlarch with additional glyphs. 
+- [siji](https://github.com/stark/siji): An iconic bitmap font based on Stlarch with additional glyphs
 
 #### sys-fs
 

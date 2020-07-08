@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>telans@posteo.net</email>
+        <name>telans</name>
+    </maintainer>
+    <use>
+        <flag name="extras">Package with demo files etc</flag>
+        <flag name="standalone">Build vkd3d as a standalone library</flag>
+        <flag name="tests">Package with the testing binary `d3d12`</flag>
+    </use>
+    <upstream>
+        <remote-id type="github">HansKristian-Work/vkd3d-proton</remote-id>
+    </upstream>
+</pkgmetadata>

@@ -10,19 +10,21 @@ HOMEPAGE="https://github.com/PaulCombal/SamRewritten/"
 
 SRC_URI="https://github.com/PaulCombal/${PN}/archive/${PV}.tar.gz"
 
-LICENSE="GPL-3.0"
+LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64 x86"
 IUSE="+zenity"
 
 S="${WORKDIR}/SamRewritten-${PV}"
 
-DEPEND="dev-cpp/gtkmm
-        dev-libs/yajl"
+DEPEND="
+    dev-cpp/gtkmm:*
+    dev-libs/yajl"
 
-RDEPEND="${DEPEND}
-         games-util/steam-launcher
-         zenity? ( gnome-extra/zenity )"
+RDEPEND="
+    ${DEPEND}
+    games-util/steam-launcher
+    zenity? ( gnome-extra/zenity )"
 
 PATCHES=("${FILESDIR}/make-install.patch")
 

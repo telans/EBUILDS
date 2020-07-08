@@ -3,7 +3,7 @@
 
 EAPI=7
 
-DESCRIPTION="GIT utilities -- repo summary, repl, changelog population, author commit percentages and more"
+DESCRIPTION="Extra GIT utilities - repo summary, changelog population, commit percentages and more"
 HOMEPAGE="https://github.com/tj/git-extras"
 
 if [ ${PV} = "9999" ]; then

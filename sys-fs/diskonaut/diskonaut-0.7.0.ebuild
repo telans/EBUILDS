@@ -99,7 +99,6 @@ SRC_URI="
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="amd64 x86"
-IUSE="debug"
 
 S="${WORKDIR}/${PN}-${PV}"
 

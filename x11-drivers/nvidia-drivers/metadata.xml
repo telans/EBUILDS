@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>telans@posteo.net</email>
+        <name>telans</name>
+    </maintainer>
+    <use>
+        <flag name="acpi">Add support for ACPI interaction</flag>
+        <flag name="compat">Install non-GLVND libGL for backwards compatibility</flag>
+        <flag name="driver">Install the kernel driver module</flag>
+        <flag name="X">Install the X.org driver, OpenGL libraries, XvMC libraries, and VDPAU libraries</flag>
+        <flag name="gtk3">Install nvidia-settings with support for GTK+ 3</flag>
+        <flag name="kernel_linux">Support for the mainline linux kernel (non gentoo)</flag>
+        <flag name="kms">Enable support for kernel mode setting (KMS)</flag>
+        <flag name="libglvnd">Use <pkg>media-libs/libglvnd</pkg> for dispatch</flag>
+        <flag name="multilib">Build support for pure 32/64 bit</flag>
+        <flag name="static-libs">Statically compile the package</flag>
+        <flag name="tools">Install additional tools such as nvidia-settings</flag>
+        <flag name="uvm">Install the Unified Memory kernel module (nvidia-uvm) for sharing memory between CPU and GPU in CUDA programs</flag>
+        <flag name="systemd">Install systemd service for nvidia-persistenced</flag>
+        <flag name="wayland">Add support for the wayland display manager</flag>
+    </use>
+</pkgmetadata>

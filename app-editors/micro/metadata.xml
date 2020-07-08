@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>telans@posteo.net</email>
+        <name>telans</name>
+    </maintainer>
+    <use>
+        <flag name="debug">Enable debugging support</flag>
+    </use>
+    <upstream>
+        <remote-id type="github">zyedidia/micro</remote-id>
+    </upstream>
+</pkgmetadata>
