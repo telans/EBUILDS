@@ -7,34 +7,27 @@ DESCRIPTION="GIT utilities -- repo summary, repl, changelog population, author c
 HOMEPAGE="https://github.com/tj/git-extras"
 
 if [ ${PV} = "9999" ]; then
-	inherit git-r3
-	EGIT_REPO_URI="https://github.com/tj/git-extras.git"
+    inherit git-r3
+    EGIT_REPO_URI="https://github.com/tj/git-extras.git"
 else
-	SRC_URI="https://github.com/tj/git-extras/archive/${PV}.tar.gz"
+    SRC_URI="https://github.com/tj/git-extras/archive/${PV}.tar.gz"
 fi
 
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-RDEPEND="
-	dev-vcs/git
-"
-
-DEPEND="
-	${RDEPEND}
-"
+RDEPEND="dev-vcs/git"
+DEPEND="${RDEPEND}"
 
 src_compile() {
-	# ebuild will attempt to run make without the install command
-	# so just bypass this step.
-	true
+    true
 }
 
 src_install() {
-	emake DESTDIR="${D}" \
-		PREFIX=/usr \
-		MANPREFIX=/usr/share/man/man1 \
-		SYSCONFDIR=/etc \
-		install
+    emake DESTDIR="${D}" \
+        PREFIX=/usr \
+        MANPREFIX=/usr/share/man/man1 \
+        SYSCONFDIR=/etc \
+        install
 }

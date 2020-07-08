@@ -19,6 +19,7 @@ S="${WORKDIR}/SamRewritten-${PV}"
 
 DEPEND="dev-cpp/gtkmm
         dev-libs/yajl"
+
 RDEPEND="${DEPEND}
          games-util/steam-launcher
          zenity? ( gnome-extra/zenity )"
