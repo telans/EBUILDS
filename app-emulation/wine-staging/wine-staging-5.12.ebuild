@@ -42,7 +42,26 @@ fi
 
 LICENSE="LGPL-2.1"
 SLOT="${PV}"
-IUSE="+abi_x86_32 +abi_x86_64 +alsa capi cups custom-cflags dos elibc_glibc +faudio +fontconfig +gcrypt +gecko gphoto2 gsm gssapi +gstreamer +jpeg kerberos +lcms ldap +mono mp3 ncurses netapi nls odbc openal opencl +opengl osmesa oss +perl pcap pipelight +png prelink pulseaudio +realtime +run-exes samba scanner sdl selinux +ssl test themes +threads +truetype udev +udisks +unwind v4l vaapi vkd3d +vulkan +X +xcomposite xinerama +xml +mingw"
+IUSE="+abi_x86_32 +abi_x86_64 +alsa
+	capi cups +custom-cflags
+	dos
+	elibc_glibc
+	+faudio +fontconfig
+	+gcrypt +gecko gphoto2 gsm gssapi +gstreamer
+	+jpeg
+	kerberos
+	+lcms ldap
+	+mingw +mono +mp3
+	ncurses netapi nls
+	odbc openal opencl +opengl osmesa oss
+	+perl pcap pipelight +png prelink pulseaudio
+	+realtime +run-exes
+	samba scanner sdl selinux +ssl
+	test themes +threads +truetype
+	udev +udisks +unwind
+	v4l +vaapi vkd3d +vulkan
+	+X +xcomposite +xinerama +xml"
+
 REQUIRED_USE="|| ( abi_x86_32 abi_x86_64 )
 	X? ( truetype )
 	elibc_glibc? ( threads )
@@ -50,8 +69,6 @@ REQUIRED_USE="|| ( abi_x86_32 abi_x86_64 )
 	test? ( abi_x86_32 )
 	vkd3d? ( vulkan )" # osmesa-opengl #286560 # X-truetype #551124
 
-# FIXME: the test suite is unsuitable for us; many tests require net access
-# or fail due to Xvfb's opengl limitations.
 RESTRICT="test"
 
 COMMON_DEPEND="
@@ -82,8 +99,8 @@ COMMON_DEPEND="
 	ldap? ( net-nds/openldap:=[${MULTILIB_USEDEP}] )
 	mingw? ( cross-i686-w64-mingw32/gcc
 		cross-x86_64-w64-mingw32/gcc )
-	mp3? ( >=media-sound/mpg123-1.5.0[${MULTILIB_USEDEP}] )
-	ncurses? ( >=sys-libs/ncurses-5.2:0=[${MULTILIB_USEDEP}] )
+	mp3? ( media-sound/mpg123[${MULTILIB_USEDEP}] )
+	ncurses? ( sys-libs/ncurses:0=[${MULTILIB_USEDEP}] )
 	netapi? ( net-fs/samba[netapi(+),${MULTILIB_USEDEP}] )
 	nls? ( sys-devel/gettext[${MULTILIB_USEDEP}] )
 	odbc? ( dev-db/unixODBC:=[${MULTILIB_USEDEP}] )
@@ -106,7 +123,7 @@ COMMON_DEPEND="
 		x11-libs/cairo[${MULTILIB_USEDEP}]
 		x11-libs/gtk+:3[${MULTILIB_USEDEP}]
 	)
-	truetype? ( >=media-libs/freetype-2.0.0[${MULTILIB_USEDEP}] )
+	truetype? ( media-libs/freetype[${MULTILIB_USEDEP}] )
 	udev? ( virtual/libudev:=[${MULTILIB_USEDEP}] )
 	udisks? ( sys-apps/dbus[${MULTILIB_USEDEP}] )
 	unwind? ( sys-libs/libunwind[${MULTILIB_USEDEP}] )
@@ -125,9 +142,9 @@ RDEPEND="${COMMON_DEPEND}
 	app-emulation/wine-desktop-common
 	>app-eselect/eselect-wine-0.3
 	!app-emulation/wine:0
-	dos? ( >=games-emulation/dosbox-0.74_p20160629 )
-	gecko? ( app-emulation/wine-gecko:2.47.1[abi_x86_32?,abi_x86_64?] )
-	mono? ( app-emulation/wine-mono:5.1.0 )
+	dos? ( games-emulation/dosbox )
+	gecko? ( app-emulation/wine-gecko[abi_x86_32?,abi_x86_64?] )
+	mono? ( app-emulation/wine-mono )
 	perl? (
 		dev-lang/perl
 		dev-perl/XML-Simple
@@ -135,7 +152,7 @@ RDEPEND="${COMMON_DEPEND}
 	pulseaudio? (
 		realtime? ( sys-auth/rtkit )
 	)
-	samba? ( >=net-fs/samba-3.0.25[winbind] )
+	samba? ( net-fs/samba[winbind] )
 	selinux? ( sec-policy/selinux-wine )
 	udisks? ( sys-fs/udisks:2 )"
 
@@ -164,12 +181,6 @@ PATCHES=(
 	"${PATCHDIR}/patches/${MY_PN}-2.0-multislot-apploader.patch" #310611
 	"${PATCHDIR}/patches/${MY_PN}-5.9-Revert-makedep-Install-also-generated-typelib-for-in.patch"
 )
-PATCHES_BIN=()
-
-# https://bugs.gentoo.org/show_bug.cgi?id=635222
-if [[ ${#PATCHES_BIN[@]} -ge 1 ]] || [[ ${PV} == 9999 ]]; then
-	DEPEND+=" dev-util/patchbin"
-fi
 
 patches() {
 	if use vkd3d; then
@@ -221,13 +232,6 @@ src_unpack() {
 }
 
 src_prepare() {
-	eapply_bin(){
-		local patch
-		for patch in ${PATCHES_BIN[@]}; do
-			patchbin --nogit < "${patch}" || die
-		done
-	}
-
 	local md5="$(md5sum server/protocol.def)"
 	local STAGING_EXCLUDE="-W winemenubuilder-Desktop_Icon_Path" #652176
 	use pipelight || STAGING_EXCLUDE="${STAGING_EXCLUDE} -W Pipelight"
