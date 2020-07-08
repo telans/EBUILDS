@@ -43,7 +43,3 @@ app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{win
 #### x11-drivers
 
 - [nvidia-drivers](https://developer.nvidia.com/vulkan-driver): NVIDIA Vulkan developer beta drivers
-
-#### x11-misc
-
-- [polybar](https://github.com/polybar/polybar): A fast and easy-to-use status bar  (up to date)
