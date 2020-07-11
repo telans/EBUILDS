@@ -87,10 +87,6 @@ QA_PREBUILT="opt/* usr/lib*"
 S=${WORKDIR}/
 PATCHES=(
 	"${FILESDIR}"/${PN}-440.26-locale.patch
-	# Taken from AUR package which took from:
-	# https://gitlab.com/snippets/1945940
-	"${FILESDIR}"/vulkan-kernel-5.6.patch
-	"${FILESDIR}"/vulkan-kernel-5.7.patch
 )
 
 pkg_setup() {
@@ -150,14 +146,10 @@ src_prepare() {
 
 	if use tools; then
 		cp "${FILESDIR}"/nvidia-settings-linker.patch "${WORKDIR}" || die
-		cp "${FILESDIR}"/nvidia-settings-fno-common.patch "${WORKDIR}" || dir
 		sed -i \
 			-e "s:@PV@:${NV_SETTINGS_PV}:g" \
-			"${WORKDIR}"/nvidia-settings-linker.patch \
-			"${WORKDIR}"/nvidia-settings-fno-common.patch \
-			|| die
+			"${WORKDIR}"/nvidia-settings-linker.patch || die
 		eapply "${WORKDIR}"/nvidia-settings-linker.patch
-		eapply "${WORKDIR}"/nvidia-settings-fno-common.patch
 	fi
 
 	default
@@ -438,7 +430,6 @@ src_install-libs() {
 			"libnvidia-compiler.so.${NV_SOVER}"
 			"libnvidia-eglcore.so.${NV_SOVER}"
 			"libnvidia-encode.so.${NV_SOVER}"
-			"libnvidia-fatbinaryloader.so.${NV_SOVER}"
 			"libnvidia-fbc.so.${NV_SOVER}"
 			"libnvidia-glcore.so.${NV_SOVER}"
 			"libnvidia-glsi.so.${NV_SOVER}"
