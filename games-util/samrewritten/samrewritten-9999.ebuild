@@ -31,8 +31,6 @@ RDEPEND="
     games-util/steam-launcher
     zenity? ( gnome-extra/zenity )"
 
-PATCHES=("${FILESDIR}/make-install.patch")
-
 src_prepare() {
     default
 }
