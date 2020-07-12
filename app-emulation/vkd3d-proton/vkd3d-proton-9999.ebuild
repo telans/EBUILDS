@@ -26,9 +26,7 @@ HOMEPAGE="https://github.com/HansKristian-Work/vkd3d-proton/"
 LICENSE="LGPL-2.1"
 SLOT="0"
 
-PATCHES=("${FILESDIR}/meson-pkgconfig.patch")
-
-S="${WORKDIR}/${PN}-${PV}"
+PATCHES=("${FILESDIR}/meson.patch")
 
 src_prepare() {
     default
@@ -49,9 +47,4 @@ multilib_src_compile() {
 
 multilib_src_install() {
     meson_src_install
-}
-
-multilib_src_install_all() {
-    insinto /usr/include/vkd3d/
-    doins ${S}/include/*.h
 }

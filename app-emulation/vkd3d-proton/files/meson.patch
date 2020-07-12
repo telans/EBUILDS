@@ -1,8 +1,8 @@
 diff --git a/meson.build b/meson.build
-index 125e2bd..5a76aa0 100644
+index 125e2bd..788ac1f 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -77,6 +77,16 @@ vkd3d_version = vcs_tag(
+@@ -77,6 +77,18 @@ vkd3d_version = vcs_tag(
  dxil_spirv = subproject('dxil-spirv')
  dxil_spirv_dep = dxil_spirv.get_variable('dxil_spirv_dep')
  
@@ -15,6 +15,8 @@ index 125e2bd..5a76aa0 100644
 +
 +	vkd3dshader = library('vkd3d-shader')
 +	pkg.generate(vkd3dshader, filebase : 'libvkd3d-shader', subdirs : 'vkd3d', description : 'The VKD3D Shader Translation Library')
++
++install_headers('include/vkd3d.h', 'include/vkd3d_shader.h', 'include/vkd3d_sonames.h', 'include/vkd3d_types.h', 'include/vkd3d_utils.h', 'include/vkd3d_win32.h', 'include/vkd3d_windows.h', subdir : 'vkd3d')
 +
  subdir('include')
  subdir('libs')
