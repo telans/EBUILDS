@@ -1,8 +1,6 @@
 # EBUILDS
 
-### Highlights:
 
-app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{wine-staging,dxvk,vkd3d-proton}
 
 ---
 
@@ -16,8 +14,8 @@ app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{win
 #### app-emulation
 
 - [wine-staging](https://github.com/wine-staging/wine-staging): wine-staging with MinGW
-- [dxvk-9999](https://github.com/doitsujin/dxvk): Vulkan-based implementation of D3D9, D3D10 and D3D11 for Linux / Wine
-- [vkd3d-proton-9999](https://github.com/HansKristian-Work/vkd3d): Development branches for Proton's Direct3D 12 implementation
+- [vkd3d-proton](https://github.com/HansKristian-Work/vkd3d): Development branches for Proton's Direct3D 12 implementation
+- [dxvk](https://github.com/doitsujin/dxvk): Vulkan-based implementation of D3D9, D3D10 and D3D11 for Linux / Wine
 
 #### dev-dotnet
 
@@ -26,7 +24,7 @@ app-editors/micro, sys-fs/diskonaut, games-util/samrewritten, app-emulation/{win
 
 #### dev-vcs
 
-- [git-extras-9999](https://github.com/tj/git-extras): Extended `git` utilities
+- [git-extras](https://github.com/tj/git-extras): Extended `git` utilities
 
 #### games-util
 
