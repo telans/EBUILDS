@@ -12,7 +12,7 @@ LICENSE="MIT"
 SRC_URI="https://download.visualstudio.microsoft.com/download/pr/37268c18-226d-436b-b13c-4b77b7f42140/17e8a85360206006a557d634d16713cd/dotnet-sdk-3.1.105-linux-x64.tar.gz"
 
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
 QA_PREBUILT="*"
 RESTRICT="splitdebug"
