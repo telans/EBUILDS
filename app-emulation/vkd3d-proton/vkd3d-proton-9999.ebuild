@@ -6,7 +6,7 @@ EAPI=7
 inherit git-r3 meson multilib-minimal
 
 EGIT_REPO_URI="https://github.com/HansKristian-Work/vkd3d-proton.git"
-IUSE="extras standalone tests"
+IUSE="extras tests"
 
 RDEPEND="
     media-libs/vulkan-loader[${MULTILIB_USEDEP},X]
@@ -36,7 +36,6 @@ multilib_src_configure() {
     local emesonargs=(
         $(meson_use extras enable_extras)
         $(meson_use tests enable_tests)
-        $(meson_use standalone enable_standalone_d3d12)
     )
     meson_src_configure
 }
