@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>telans@posteo.net</email>
+        <name>telans</name>
+    </maintainer>
+    <use>
+        <flag name="ffmpeg">Require support for ffmpeg through the "libsvt_vp9" encoder and "svt_vp9" USE flag</flag>
+    </use>
+    <upstream>
+        <remote-id type="github">OpenVisualCloud/SVT-VP9</remote-id>
+    </upstream>
+</pkgmetadata>

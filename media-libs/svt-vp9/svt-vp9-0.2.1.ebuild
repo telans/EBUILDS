@@ -12,10 +12,11 @@ SRC_URI="https://github.com/OpenVisualCloud/SVT-VP9/archive/v${PV}.tar.gz -> ${P
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE=""
+IUSE="ffmpeg"
 
 DEPEND="dev-lang/nasm"
-RDEPEND="${DEPEND}"
+RDEPEND="${DEPEND}
+    ffmpeg? ( >=media-video/ffmpeg-4.2.4[encode,svt_vp9] )"
 
 S="${WORKDIR}/SVT-VP9-${PV}"
 

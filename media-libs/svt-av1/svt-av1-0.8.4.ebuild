@@ -12,10 +12,11 @@ SRC_URI="https://github.com/OpenVisualCloud/SVT-AV1/archive/v${PV}.tar.gz -> ${P
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE=""
+IUSE="ffmpeg"
 
 DEPEND="dev-lang/nasm"
-RDEPEND="${DEPEND}"
+RDEPEND="${DEPEND}
+    ffmpeg? ( >=media-video/ffmpeg-4.2.4[encode,svt_av1] )"
 
 S="${WORKDIR}/SVT-AV1-${PV}"
 
