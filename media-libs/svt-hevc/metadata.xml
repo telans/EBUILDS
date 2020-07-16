@@ -5,9 +5,6 @@
         <email>telans@posteo.net</email>
         <name>telans</name>
     </maintainer>
-    <use>
-        <flag name="ffmpeg">Require support for ffmpeg through the "libsvt_vp9" encoder and "svt_vp9" USE flag</flag>
-    </use>
     <upstream>
         <remote-id type="github">OpenVisualCloud/SVT-HEVC</remote-id>
     </upstream>

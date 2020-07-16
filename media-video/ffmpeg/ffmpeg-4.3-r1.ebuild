@@ -99,7 +99,7 @@ FFMPEG_ENCODER_FLAG_MAP=(
 	kvazaar:libkvazaar libaom
 	openh264:libopenh264 rav1e:librav1e snappy:libsnappy theora:libtheora twolame:libtwolame
 	wavpack:libwavpack webp:libwebp x264:libx264 x265:libx265 xvid:libxvid
-	svt_av1:libsvt_av1 svt_hevc:libsvt_hevc svt_vp9:libsvt_vp9
+	svt_av1:libsvtav1 svt_hevc:libsvthevc svt_vp9:libsvtvp9
 )
 
 IUSE="
@@ -427,6 +427,16 @@ multilib_src_configure() {
 		[[ ${ABI} == x86 ]] && myconf+=( --disable-asm )
 	fi
 	[[ ${ABI} == x32 ]] && myconf+=( --disable-asm ) #427004
+
+	if [[ ${ABI} == x86 ]] && use svt_av1; then
+		myconf+=(--disable-libsvtav1)
+	fi
+	if [[ ${ABI} == x86 ]] && use svt_hevc; then
+		myconf+=(--disable-libsvthevc)
+	fi
+	if [[ ${ABI} == x86 ]] && use svt_vp9; then
+		myconf+=(--disable-libsvtvp9)
+	fi
 
 	# Try to get cpu type based on CFLAGS.
 	# Bug #172723

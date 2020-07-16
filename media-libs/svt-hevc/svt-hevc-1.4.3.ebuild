@@ -12,11 +12,10 @@ SRC_URI="https://github.com/OpenVisualCloud/SVT-HEVC/archive/v${PV}.tar.gz -> ${
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="ffmpeg"
+IUSE=""
 
 DEPEND="dev-lang/nasm"
-RDEPEND="${DEPEND}
-    ffmpeg? ( >=media-video/ffmpeg-4.2.4[encode,svt_hevc] )"
+RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/SVT-HEVC-${PV}"
 
