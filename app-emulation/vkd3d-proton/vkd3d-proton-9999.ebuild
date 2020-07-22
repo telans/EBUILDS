@@ -26,12 +26,6 @@ HOMEPAGE="https://github.com/HansKristian-Work/vkd3d-proton/"
 LICENSE="LGPL-2.1"
 SLOT="0"
 
-PATCHES=("${FILESDIR}/meson.patch")
-
-src_prepare() {
-    default
-}
-
 multilib_src_configure() {
     local emesonargs=(
         $(meson_use extras enable_extras)
