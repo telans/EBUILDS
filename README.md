@@ -1,14 +1,7 @@
 # EBUILDS
 
-
-
----
-
-### All packages:
-
 #### app-editors
 
-- [micro](https://github.com/zyedidia/micro): A modern and intuitive terminal-based text editor
 - [visual-studio-code](https://github.com/Microsoft/vscode): Visual Studio Code (binary version)
 
 #### app-emulation
@@ -33,6 +26,16 @@
 #### media-fonts
 
 - [siji](https://github.com/stark/siji): An iconic bitmap font based on Stlarch with additional glyphs
+
+### media-libs
+
+- [svt-av1](https://github.com/OpenVisualCloud/SVT-AV1): Scalable Video Technology for AV1 (SVT-AV1 Encoder and Decoder)
+- [svt-hevc](https://github.com/OpenVisualCloud/SVT-HEVC): Scalable Video Technology for HEVC (SVT-HEVC Encoder and Decoder)
+- [svt-vp9](https://github.com/OpenVisualCloud/SVT-VP9): Scalable Video Technology for VP9 (SVT-VP9 Encoder and Decoder)
+
+### media-video
+
+- [ffmpeg](https://ffmpeg.org/): FFmpeg with patches for integrated SVT-AV1, SVT-HEVC, SVT-VP9 support
 
 #### sys-fs
 
