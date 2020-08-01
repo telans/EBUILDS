@@ -328,7 +328,7 @@ RESTRICT="
 S=${WORKDIR}/${P/_/-}
 
 PATCHES=(
-	"${FILESDIR}"/chromium-r1.patch
+	"${FILESDIR}"/chromium.patch
 	"${FILESDIR}"/${PN}-4.3-fix-build-without-SSSE3.patch
 )
 
