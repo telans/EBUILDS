@@ -20,7 +20,7 @@ PATCHDIR="${WORKDIR}/gentoo-wine-patches"
 MAJOR_V=$(ver_cut 1)
 SRC_URI="
     patched? ( https://github.com/telans/wine/archive/v${PV}.tar.gz -> ${MY_P}.tar.gz )
-    !patched? ( 
+    !patched? (
         https://dl.winehq.org/wine/source/${MAJOR_V}.x/${MY_P}.tar.xz
         https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${STAGING_P}.tar.gz )
     https://dev.gentoo.org/~sarnex/distfiles/wine/gentoo-wine-patches-${GWP_V}.tar.xz"
