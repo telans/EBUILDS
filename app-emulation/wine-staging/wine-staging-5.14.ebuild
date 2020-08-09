@@ -1,12 +1,12 @@
 # Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 PLOCALES="ar ast bg ca cs da de el en en_US eo es fa fi fr he hi hr hu it ja ko lt ml nb_NO nl or pa pl pt_BR pt_PT rm ro ru si sk sl sr_RS@cyrillic sr_RS@latin sv ta te th tr uk wa zh_CN zh_TW"
 PLOCALE_BACKUP="en"
 
-inherit autotools eapi7-ver estack eutils flag-o-matic gnome2-utils l10n multilib multilib-minimal pax-utils toolchain-funcs virtualx xdg-utils
+inherit autotools estack eutils flag-o-matic l10n multilib multilib-minimal pax-utils toolchain-funcs xdg-utils
 
 MY_PN="${PN%%-*}"
 MY_P="${MY_PN}-${PV}"
@@ -19,10 +19,12 @@ PATCHDIR="${WORKDIR}/gentoo-wine-patches"
 
 MAJOR_V=$(ver_cut 1)
 SRC_URI="
-    https://dl.winehq.org/wine/source/${MAJOR_V}.x/${MY_P}.tar.xz
-    https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${STAGING_P}.tar.gz
+    patched? ( https://github.com/telans/wine/archive/v${PV}.tar.gz -> ${MY_P}.tar.gz )
+    !patched? ( 
+        https://dl.winehq.org/wine/source/${MAJOR_V}.x/${MY_P}.tar.xz
+        https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${STAGING_P}.tar.gz )
     https://dev.gentoo.org/~sarnex/distfiles/wine/gentoo-wine-patches-${GWP_V}.tar.xz"
-KEYWORDS="-* ~amd64 ~x86"
+KEYWORDS="~amd64 ~x86"
 
 DESCRIPTION="Free implementation of Windows(tm) on Unix, with Wine-Staging patchset"
 HOMEPAGE="https://www.winehq.org/"
@@ -42,14 +44,13 @@ IUSE="
     +mingw +mono +mp3
     ncurses netapi nls
     odbc openal opencl +opengl osmesa oss
-    +perl pcap pipelight +png prelink pulseaudio
+    +patched +perl pcap pipelight +png prelink pulseaudio
     +realtime +run-exes
     samba scanner sdl selinux +ssl
     themes +threads +truetype
     udev +udisks +unwind
     v4l +vaapi +vkd3d +vulkan
-    +X +xcomposite +xinerama +xml
-    +_fs_bypass_compositor"
+    +X +xcomposite +xinerama +xml"
 
 REQUIRED_USE="
     || ( abi_x86_32 abi_x86_64 )
@@ -57,7 +58,7 @@ REQUIRED_USE="
     X? ( truetype )
     elibc_glibc? ( threads )
     osmesa? ( opengl )
-    vkd3d? ( vulkan )" # osmesa-opengl #286560 # X-truetype #551124
+    vkd3d? ( vulkan )"
 
 COMMON_DEPEND="
     X? (
@@ -172,24 +173,6 @@ PATCHES=(
     "${PATCHDIR}/patches/${MY_PN}-5.9-Revert-makedep-Install-also-generated-typelib-for-in.patch"
 )
 
-staging_patches() {
-    pushd ${STAGING_DIR}
-    eapply "${FILESDIR}/0000-csmt-toggle.patch"
-    popd
-}
-
-wine_patches() {
-    eapply "${FILESDIR}/0000-glsl-toggle.patch"
-    
-    if use _fs_bypass_compositor; then
-        eapply "${FILESDIR}/0001-fs_bypass_compositor.patch"
-    fi
-
-    if use vkd3d; then
-        eapply "${FILESDIR}/0002-vkd3d-d3d12-fixes.patch"
-    fi
-}
-
 wine_build_environment_check() {
     [[ ${MERGE_TYPE} = "binary" ]] && return 0
 
@@ -228,23 +211,22 @@ src_unpack() {
 
 src_prepare() {
     local md5="$(md5sum server/protocol.def)"
-    local STAGING_EXCLUDE="-W winemenubuilder-Desktop_Icon_Path" #652176
-    use pipelight || STAGING_EXCLUDE="${STAGING_EXCLUDE} -W Pipelight"
+    
+    if !use patched; then
+        local STAGING_EXCLUDE="-W winemenubuilder-Desktop_Icon_Path" #652176
+        use pipelight || STAGING_EXCLUDE="${STAGING_EXCLUDE} -W Pipelight"
 
-    staging_patches
+        # Launch wine-staging patcher in a subshell, using eapply as a backend, and gitapply.sh as a backend for binary patches
+        ebegin "Running Wine-Staging patch installer"
+        (
+            set -- DESTDIR="${S}" --backend=eapply --no-autoconf --all ${STAGING_EXCLUDE}
+            cd "${STAGING_DIR}/patches"
+            source "${STAGING_DIR}/patches/patchinstall.sh"
+        )
+        eend $? || die "Failed to apply Wine-Staging patches"
+    fi
 
-    # Launch wine-staging patcher in a subshell, using eapply as a backend, and gitapply.sh as a backend for binary patches
-    ebegin "Running Wine-Staging patch installer"
-    (
-        set -- DESTDIR="${S}" --backend=eapply --no-autoconf --all ${STAGING_EXCLUDE}
-        cd "${STAGING_DIR}/patches"
-        source "${STAGING_DIR}/patches/patchinstall.sh"
-    )
-    eend $? || die "Failed to apply Wine-Staging patches"
-
-    wine_patches
     default
-    eapply_bin
     eautoreconf
 
     # Modification of the server protocol requires regenerating the server requests
@@ -416,7 +398,7 @@ multilib_src_install_all() {
 pkg_postinst() {
     eselect wine register ${P}
     eselect wine register --staging ${P} || die
-    eselect wine update --all --if-unset || die
+    eselect wine update --all || die
 
     xdg_desktop_database_update
 }
@@ -424,7 +406,7 @@ pkg_postinst() {
 pkg_prerm() {
     eselect wine deregister ${P}
     eselect wine deregister --staging ${P} || die
-    eselect wine update --all --if-unset || die
+    eselect wine update --all || die
 }
 
 pkg_postrm() {
