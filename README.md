@@ -6,7 +6,7 @@
 
 #### app-emulation
 
-- [wine-staging](https://github.com/wine-staging/wine-staging): wine-staging with MinGW
+- [wine-staging](https://github.com/wine-staging/wine-staging): wine-tkg-staging with MinGW & many patches to improve the gaming experience. See [telans/wine](https://github.com/telans/wine/releases) for details
 - [vkd3d-proton](https://github.com/HansKristian-Work/vkd3d): Development branches for Proton's Direct3D 12 implementation
 - [dxvk](https://github.com/doitsujin/dxvk): Vulkan-based implementation of D3D9, D3D10 and D3D11 for Linux / Wine
 
