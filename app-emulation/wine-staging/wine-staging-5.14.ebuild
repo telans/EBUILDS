@@ -11,36 +11,21 @@ inherit autotools eapi7-ver estack eutils flag-o-matic gnome2-utils l10n multili
 MY_PN="${PN%%-*}"
 MY_P="${MY_PN}-${PV}"
 
-if [[ ${PV} == "9999" ]] ; then
-    EGIT_REPO_URI="https://source.winehq.org/git/wine.git"
-    EGIT_BRANCH="master"
-    inherit git-r3
-    SRC_URI=""
-else
-    MAJOR_V=$(ver_cut 1)
-    SRC_URI="https://dl.winehq.org/wine/source/${MAJOR_V}.x/${MY_P}.tar.xz"
-    KEYWORDS="-* ~amd64 ~x86"
-fi
 S="${WORKDIR}/${MY_P}"
-
-STAGING_P="wine-staging-${PV}.1"
+STAGING_P="wine-staging-${PV}"
 STAGING_DIR="${WORKDIR}/${STAGING_P}"
 GWP_V="20200523"
 PATCHDIR="${WORKDIR}/gentoo-wine-patches"
 
+MAJOR_V=$(ver_cut 1)
+SRC_URI="
+    https://dl.winehq.org/wine/source/${MAJOR_V}.x/${MY_P}.tar.xz
+    https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${STAGING_P}.tar.gz
+    https://dev.gentoo.org/~sarnex/distfiles/wine/gentoo-wine-patches-${GWP_V}.tar.xz"
+KEYWORDS="-* ~amd64 ~x86"
+
 DESCRIPTION="Free implementation of Windows(tm) on Unix, with Wine-Staging patchset"
 HOMEPAGE="https://www.winehq.org/"
-SRC_URI="
-    ${SRC_URI}
-    https://dev.gentoo.org/~sarnex/distfiles/wine/gentoo-wine-patches-${GWP_V}.tar.xz"
-
-if [[ ${PV} == "9999" ]] ; then
-    STAGING_EGIT_REPO_URI="https://github.com/wine-staging/wine-staging.git"
-else
-    SRC_URI="
-        ${SRC_URI}
-        https://github.com/wine-staging/wine-staging/archive/v${PV}.1.tar.gz -> ${STAGING_P}.tar.gz"
-fi
 
 LICENSE="LGPL-2.1"
 SLOT="${PV}"
@@ -60,20 +45,19 @@ IUSE="
     +perl pcap pipelight +png prelink pulseaudio
     +realtime +run-exes
     samba scanner sdl selinux +ssl
-    test themes +threads +truetype
+    themes +threads +truetype
     udev +udisks +unwind
-    v4l +vaapi vkd3d +vulkan
-    +X +xcomposite +xinerama +xml"
+    v4l +vaapi +vkd3d +vulkan
+    +X +xcomposite +xinerama +xml
+    +_fs_bypass_compositor"
 
 REQUIRED_USE="
     || ( abi_x86_32 abi_x86_64 )
+    || ( X ncurses )
     X? ( truetype )
     elibc_glibc? ( threads )
     osmesa? ( opengl )
-    test? ( abi_x86_32 )
     vkd3d? ( vulkan )" # osmesa-opengl #286560 # X-truetype #551124
-
-RESTRICT="test"
 
 COMMON_DEPEND="
     X? (
@@ -188,9 +172,21 @@ PATCHES=(
     "${PATCHDIR}/patches/${MY_PN}-5.9-Revert-makedep-Install-also-generated-typelib-for-in.patch"
 )
 
-patches() {
+staging_patches() {
+    pushd ${STAGING_DIR}
+    eapply "${FILESDIR}/0000-csmt-toggle.patch"
+    popd
+}
+
+wine_patches() {
+    eapply "${FILESDIR}/0000-glsl-toggle.patch"
+    
+    if use _fs_bypass_compositor; then
+        eapply "${FILESDIR}/0001-fs_bypass_compositor.patch"
+    fi
+
     if use vkd3d; then
-        eapply "${FILESDIR}/d3d12-fixes.patch"
+        eapply "${FILESDIR}/0002-vkd3d-d3d12-fixes.patch"
     fi
 }
 
@@ -226,13 +222,6 @@ pkg_setup() {
 }
 
 src_unpack() {
-    if [[ ${PV} == "9999" ]] ; then
-        EGIT_CHECKOUT_DIR="${S}" git-r3_src_unpack
-        local CURRENT_WINE_COMMIT=${EGIT_VERSION}
-        EGIT_CHECKOUT_DIR="${STAGING_DIR}" EGIT_REPO_URI="${STAGING_EGIT_REPO_URI}" git-r3_src_unpack
-        local COMPAT_WINE_COMMIT=$("${STAGING_DIR}/patches/patchinstall.sh" --upstream-commit) || die
-    fi
-
     default
     l10n_find_plocales_changes "${S}/po" "" ".po"
 }
@@ -241,6 +230,8 @@ src_prepare() {
     local md5="$(md5sum server/protocol.def)"
     local STAGING_EXCLUDE="-W winemenubuilder-Desktop_Icon_Path" #652176
     use pipelight || STAGING_EXCLUDE="${STAGING_EXCLUDE} -W Pipelight"
+
+    staging_patches
 
     # Launch wine-staging patcher in a subshell, using eapply as a backend, and gitapply.sh as a backend for binary patches
     ebegin "Running Wine-Staging patch installer"
@@ -251,6 +242,7 @@ src_prepare() {
     )
     eend $? || die "Failed to apply Wine-Staging patches"
 
+    wine_patches
     default
     eapply_bin
     eautoreconf
@@ -347,7 +339,7 @@ multilib_src_configure() {
         $(use_with threads pthread)
         $(use_with scanner sane)
         $(use_with sdl)
-        $(use_enable test tests)
+        --without-tests
         $(use_with truetype freetype)
         $(use_with udev)
         $(use_with unwind)
@@ -383,20 +375,6 @@ multilib_src_configure() {
     emake depend
 }
 
-multilib_src_test() {
-    # FIXME: win32-only; wine64 tests fail with "could not find the Wine loader"
-    if [[ ${ABI} == x86 ]]; then
-        if [[ $(id -u) == 0 ]]; then
-            ewarn "Skipping tests since they cannot be run under the root user."
-            ewarn "To run the test ${MY_PN} suite, add userpriv to FEATURES in make.conf"
-            return
-        fi
-
-        WINEPREFIX="${T}/.wine-${ABI}" \
-        Xemake test
-    fi
-}
-
 multilib_src_install_all() {
     local DOCS=( ANNOUNCE AUTHORS README )
     add_locale_docs() {
@@ -411,16 +389,6 @@ multilib_src_install_all() {
     if ! use perl ; then # winedump calls function_grep.pl, and winemaker is a perl script
         rm "${D%/}${MY_PREFIX}"/bin/{wine{dump,maker},function_grep.pl} \
             "${D%/}${MY_MANDIR}"/man1/wine{dump,maker}.1 || die
-    fi
-
-    # Remove wineconsole if neither backend is installed #551124
-    if ! use X && ! use ncurses; then
-        rm "${D%/}${MY_PREFIX}"/bin/wineconsole* || die
-        rm "${D%/}${MY_MANDIR}"/man1/wineconsole* || die
-        rm_wineconsole() {
-            rm "${D%/}${MY_PREFIX}/$(get_libdir)"/wine/{,fakedlls/}wineconsole.exe* || die
-        }
-        multilib_foreach_abi rm_wineconsole
     fi
 
     use abi_x86_32 && pax-mark psmr "${D%/}${MY_PREFIX}"/bin/wine{,-preloader} #255055
