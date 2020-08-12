@@ -9,10 +9,10 @@ DESCRIPTION="Common files shared between multiple slots of .NET Core"
 HOMEPAGE="https://www.microsoft.com/net/core"
 LICENSE="MIT"
 
-SRC_URI="https://download.visualstudio.microsoft.com/download/pr/8db2b522-7fa2-4903-97ec-d6d04d297a01/f467006b9098c2de256e40d2e2f36fea/dotnet-sdk-3.1.301-linux-x64.tar.gz"
+SRC_URI="https://download.visualstudio.microsoft.com/download/pr/b8ea2bd6-57e1-41cd-a369-c0fa1a2e42cb/ca094f98bc3c6388d048f0633f6f0f79/dotnet-sdk-3.1.107-linux-x64.tar.gz"
 
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
 QA_PREBUILT="*"
 RESTRICT="splitdebug"
