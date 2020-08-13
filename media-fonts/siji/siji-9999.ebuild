@@ -19,17 +19,17 @@ DEPEND="x11-apps/bdftopcf"
 RDEPEND="${DEPEND}"
 
 src_compile() {
-    if use pcf; then
-        bdftopcf bdf/${PN}.bdf -o pcf/${PN}.pcf
-    fi
+	if use pcf; then
+		bdftopcf bdf/${PN}.bdf -o pcf/${PN}.pcf
+	fi
 }
 
 src_install() {
-    insinto "/usr/share/fonts/${PN}"
+	insinto "/usr/share/fonts/${PN}"
 
-    if use pcf; then
-        doins pcf/*
-    else
-        doins bdf/*
-    fi
+	if use pcf; then
+		doins pcf/*
+	else
+		doins bdf/*
+	fi
 }

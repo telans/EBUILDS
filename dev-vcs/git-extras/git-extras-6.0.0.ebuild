@@ -7,11 +7,11 @@ DESCRIPTION="Extra GIT utilities - repo summary, changelog population, commit pe
 HOMEPAGE="https://github.com/tj/git-extras"
 
 if [ ${PV} = "9999" ]; then
-    inherit git-r3
-    EGIT_REPO_URI="https://github.com/tj/git-extras.git"
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/tj/git-extras.git"
 else
-    SRC_URI="https://github.com/tj/git-extras/archive/${PV}.tar.gz"
-    KEYWORDS="amd64 x86"
+	SRC_URI="https://github.com/tj/git-extras/archive/${PV}.tar.gz"
+	KEYWORDS="amd64 x86"
 fi
 
 LICENSE="MIT"
@@ -21,13 +21,13 @@ RDEPEND="dev-vcs/git"
 DEPEND="${RDEPEND}"
 
 src_compile() {
-    true
+	true
 }
 
 src_install() {
-    emake DESTDIR="${D}" \
-        PREFIX=/usr \
-        MANPREFIX=/usr/share/man/man1 \
-        SYSCONFDIR=/etc \
-        install
+	emake DESTDIR="${D}" \
+		PREFIX=/usr \
+		MANPREFIX=/usr/share/man/man1 \
+		SYSCONFDIR=/etc \
+		install
 }

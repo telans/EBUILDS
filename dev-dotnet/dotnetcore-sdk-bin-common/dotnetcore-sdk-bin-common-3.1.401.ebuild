@@ -18,25 +18,25 @@ QA_PREBUILT="*"
 RESTRICT="splitdebug"
 
 RDEPEND="
-    ~dev-dotnet/dotnetcore-sdk-bin-${PV}
-    !dev-dotnet/dotnetcore-sdk-bin:0"
+	~dev-dotnet/dotnetcore-sdk-bin-${PV}
+	!dev-dotnet/dotnetcore-sdk-bin:0"
 
 S=${WORKDIR}
 
 src_prepare() {
-    default
-    find . -maxdepth 1 -type d ! -name . ! -name packs -exec rm -rf {} \; || die
-    find ./packs -maxdepth 1 -type d ! -name packs ! -name NETStandard.Library.Ref -exec rm -rf {} \; || die
+	default
+	find . -maxdepth 1 -type d ! -name . ! -name packs -exec rm -rf {} \; || die
+	find ./packs -maxdepth 1 -type d ! -name packs ! -name NETStandard.Library.Ref -exec rm -rf {} \; || die
 }
 
 src_install() {
-    local dest="opt/dotnet_core"
-    dodir "${dest}"
+	local dest="opt/dotnet_core"
+	dodir "${dest}"
 
-    local ddest="${D}/${dest}"
-    cp -a "${S}"/* "${ddest}/" || die
-    dosym "/${dest}/dotnet" "/usr/bin/dotnet"
+	local ddest="${D}/${dest}"
+	cp -a "${S}"/* "${ddest}/" || die
+	dosym "/${dest}/dotnet" "/usr/bin/dotnet"
 
-    echo -n "DOTNET_ROOT=/${dest}" > "${T}/90dotnet"
-    doenvd "${T}/90dotnet"
+	echo -n "DOTNET_ROOT=/${dest}" > "${T}/90dotnet"
+	doenvd "${T}/90dotnet"
 }

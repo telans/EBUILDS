@@ -3,18 +3,18 @@
 
 EAPI=7
 
-inherit flag-o-matic cmake-utils
+inherit flag-o-matic cmake
 
 DESCRIPTION="Scalable Video Technology for HEVC (SVT-HEVC Encoder)"
 HOMEPAGE="https://github.com/OpenVisualCloud/SVT-HEVC"
 
 if [ ${PV} = "9999" ]; then
-    inherit git-r3
-    EGIT_REPO_URI="https://github.com/OpenVisualCloud/SVT-HEVC.git"
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/OpenVisualCloud/SVT-HEVC.git"
 else
-    SRC_URI="https://github.com/OpenVisualCloud/SVT-HEVC/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-    KEYWORDS="~amd64"
-    S="${WORKDIR}/SVT-HEVC-${PV}"
+	SRC_URI="https://github.com/OpenVisualCloud/SVT-HEVC/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+	KEYWORDS="~amd64"
+	S="${WORKDIR}/SVT-HEVC-${PV}"
 fi
 
 LICENSE="BSD-2"
@@ -25,19 +25,19 @@ DEPEND="dev-lang/nasm"
 RDEPEND="${DEPEND}"
 
 src_prepare() {
-    append-ldflags -Wl,-z,noexecstack
-    cmake-utils_src_prepare
+	append-ldflags -Wl,-z,noexecstack
+	cmake_src_prepare
 }
 
 src_configure() {
-    use debug && CMAKE_BUILD_TYPE=Debug
-    cmake-utils_src_configure
+	use debug && CMAKE_BUILD_TYPE=Debug
+	cmake_src_configure
 }
 
 src_compile() {
-    cmake-utils_src_compile
+	cmake_src_compile
 }
 
 src_install() {
-    cmake-utils_src_install
+	cmake_src_install
 }
