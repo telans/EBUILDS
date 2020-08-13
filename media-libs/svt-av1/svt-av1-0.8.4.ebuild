@@ -13,16 +13,16 @@ if [ ${PV} = "9999" ]; then
     EGIT_REPO_URI="https://github.com/OpenVisualCloud/SVT-AV1.git"
 else
     SRC_URI="https://github.com/OpenVisualCloud/SVT-AV1/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-    KEYWORDS="amd64"
+    KEYWORDS="~amd64"
+    S="${WORKDIR}/SVT-AV1-${PV}"
 fi
 
 LICENSE="BSD-2"
+IUSE="debug"
 SLOT="0"
 
 DEPEND="dev-lang/nasm"
 RDEPEND="${DEPEND}"
-
-S="${WORKDIR}/SVT-AV1-${PV}"
 
 src_prepare() {
     append-ldflags -Wl,-z,noexecstack
@@ -30,6 +30,7 @@ src_prepare() {
 }
 
 src_configure() {
+    use debug && CMAKE_BUILD_TYPE=Debug
     cmake-utils_src_configure
 }
 

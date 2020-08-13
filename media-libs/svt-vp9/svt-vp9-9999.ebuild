@@ -5,7 +5,7 @@ EAPI=7
 
 inherit flag-o-matic cmake-utils
 
-DESCRIPTION="Scalable Video Technology for VP9 (SVT-VP9 Encoder and Decoder)"
+DESCRIPTION="Scalable Video Technology for VP9 (SVT-VP9 Encoder)"
 HOMEPAGE="https://github.com/OpenVisualCloud/SVT-VP9"
 
 if [ ${PV} = "9999" ]; then
@@ -13,16 +13,16 @@ if [ ${PV} = "9999" ]; then
     EGIT_REPO_URI="https://github.com/OpenVisualCloud/SVT-VP9.git"
 else
     SRC_URI="https://github.com/OpenVisualCloud/SVT-VP9/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-    KEYWORDS="amd64"
+    KEYWORDS="~amd64"
+    S="${WORKDIR}/SVT-VP9-${PV}"
 fi
 
 LICENSE="BSD-2"
+IUSE="debug"
 SLOT="0"
 
 DEPEND="dev-lang/nasm"
 RDEPEND="${DEPEND}"
-
-S="${WORKDIR}/SVT-VP9-${PV}"
 
 src_prepare() {
     append-ldflags -Wl,-z,noexecstack
@@ -30,6 +30,7 @@ src_prepare() {
 }
 
 src_configure() {
+    use debug && CMAKE_BUILD_TYPE=Debug
     cmake-utils_src_configure
 }
 
