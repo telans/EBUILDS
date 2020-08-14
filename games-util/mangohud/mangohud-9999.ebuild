@@ -71,3 +71,20 @@ multilib_src_install_all() {
 	dodoc "${S}/bin/MangoHud.conf"
 	einstalldocs
 }
+
+pkg_postinst() {
+	if use video_cards_nvidia && ! use xnvctrl; then
+		einfo ""
+		einfo "If mangohud can't get the GPU load, or other GPU information,"
+		einfo "and you have an older Nvidia device."
+		einfo ""
+		einfo "Try enabling the 'xnvctrl' useflag."
+		einfo ""
+	fi
+	
+	einfo "A template configuration file has been placed in:"
+	einfo "'/usr/share/doc/${P}/MangoHud.conf.bz2'"
+	einfo ""
+	einfo "Copy this file to '\${HOME}/.config/MangoHud/MangoHud.conf',"
+	einfo "in order for it to take affect across all applications launched with 'mangohud' from your user"
+}
