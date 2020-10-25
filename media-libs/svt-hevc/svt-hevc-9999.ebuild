@@ -17,8 +17,7 @@ else
 	S="${WORKDIR}/SVT-HEVC-${PV}"
 fi
 
-LICENSE="BSD-2"
-IUSE="debug"
+LICENSE="AOM BSD-2"
 SLOT="0"
 
 DEPEND="dev-lang/nasm"
@@ -27,17 +26,4 @@ RDEPEND="${DEPEND}"
 src_prepare() {
 	append-ldflags -Wl,-z,noexecstack
 	cmake_src_prepare
-}
-
-src_configure() {
-	use debug && CMAKE_BUILD_TYPE=Debug
-	cmake_src_configure
-}
-
-src_compile() {
-	cmake_src_compile
-}
-
-src_install() {
-	cmake_src_install
 }

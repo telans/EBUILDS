@@ -16,7 +16,7 @@ else
 	KEYWORDS="amd64"
 fi
 
-LICENSE="BSD-2"
+LICENSE="AOM BSD-2"
 SLOT="0"
 
 DEPEND="dev-lang/nasm"
@@ -27,16 +27,4 @@ S="${WORKDIR}/SVT-HEVC-${PV}"
 src_prepare() {
 	append-ldflags -Wl,-z,noexecstack
 	cmake_src_prepare
-}
-
-src_configure() {
-	cmake_src_configure
-}
-
-src_compile() {
-	cmake_src_compile
-}
-
-src_install() {
-	cmake_src_install
 }

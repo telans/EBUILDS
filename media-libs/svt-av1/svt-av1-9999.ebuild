@@ -17,20 +17,10 @@ else
 	S="${WORKDIR}/SVT-AV1-${PV}"
 fi
 
-LICENSE="BSD-2"
-IUSE="debug"
-SLOT="0/0.8.4"
+LICENSE="AOM BSD-2"
+SLOT="0/0.8.5"
 
 src_prepare() {
 	append-ldflags -Wl,-z,noexecstack
 	cmake_src_prepare
-}
-
-src_configure() {
-	local mycmakeargs=(
-		-DCMAKE_BUILD_TYPE=$(usex debug Debug Release)
-		-DBUILD_TESTING=False # Requires cloning https://github.com/Cidana-Developers/aom.git/
-	)
-
-	cmake_src_configure
 }
